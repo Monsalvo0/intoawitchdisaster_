@@ -17,3 +17,41 @@ body
     left: 0;
     outline: none;
 }
+
+#start-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #ff69b4a3;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: opacity 0.5s;
+}
+
+.instructions-content {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    padding: 2rem 3rem;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.15);
+    text-align: left;
+}
+
+.instructions-content h1,
+.instructions-content p:first-of-type {
+    text-align: center;
+}
+
+.instructions-content ul,
+.instructions-content li {
+    text-align: left;
+}
+
+#start-screen.hide {
+    opacity: 0;
+    pointer-events: none;
+}

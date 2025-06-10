@@ -439,3 +439,13 @@ const tick = () =>
 }
 
 tick();
+
+window.addEventListener('keydown', (event) => {
+    if (event.key === '1') {
+        const startScreen = document.getElementById('start-screen');
+        if (startScreen) {
+            startScreen.classList.add('hide');
+            setTimeout(() => startScreen.style.display = 'none', 500);
+        }
+    }
+});
