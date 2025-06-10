@@ -449,3 +449,103 @@ window.addEventListener('keydown', (event) => {
         }
     }
 });
+
+// Variables para guardar el estado original
+let cauldronOriginalEmissive = null;
+let bookOriginalEmissive = null;
+
+// Raycaster y mouse ya definidos
+canvas.addEventListener('mousemove', (event) => {
+    if (!window.cauldron || !window.book) return;
+
+    // Normaliza coordenadas del mouse
+    mouse.x = (event.clientX / sizes.width) * 2 - 1;
+    mouse.y = - (event.clientY / sizes.height) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+
+    const intersectsCauldron = raycaster.intersectObject(window.cauldron, true);
+    if (intersectsCauldron.length > 0) {
+        if (!cauldronOriginalEmissive) {
+            cauldronOriginalEmissive = window.cauldron.material.emissive.clone();
+        }
+        window.cauldron.material.emissive.set(0x44ffcc);
+        window.cauldron.material.emissiveIntensity = 0.7;
+    } else if (cauldronOriginalEmissive) {
+        window.cauldron.material.emissive.copy(cauldronOriginalEmissive);
+        window.cauldron.material.emissiveIntensity = 1;
+    }
+
+    // Hover libro
+    const intersectsBook = raycaster.intersectObject(window.book, true);
+    if (intersectsBook.length > 0) {
+        if (!bookOriginalEmissive) {
+            bookOriginalEmissive = window.book.material.emissive.clone();
+        }
+        window.book.material.emissive.set(0xffe066);
+        window.book.material.emissiveIntensity = 0.7;
+    } else if (bookOriginalEmissive) {
+        window.book.material.emissive.copy(bookOriginalEmissive);
+        window.book.material.emissiveIntensity = 1;
+    }
+});
+
+// Variables para bookshelf parpadeante
+let bookshelfOriginalEmissive = null;
+let bookshelfBlinkTimeout = null;
+let bookshelfBlinking = false;
+
+canvas.addEventListener('mousemove', (event) => {
+    if (!window.cauldron || !window.book || !window.bookshelf) return;
+
+    // Normaliza coordenadas del mouse
+    mouse.x = (event.clientX / sizes.width) * 2 - 1;
+    mouse.y = - (event.clientY / sizes.height) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+
+    // Hover caldero (ya tienes este bloque)
+    // ...
+
+    // Hover libro (ya tienes este bloque)
+    // ...
+
+    // Hover bookshelf (parpadeo dos veces)
+    const intersectsBookshelf = raycaster.intersectObject(window.bookshelf, true);
+    if (intersectsBookshelf.length > 0) {
+        if (!bookshelfBlinking) {
+            bookshelfBlinking = true;
+            if (!bookshelfOriginalEmissive) {
+                bookshelfOriginalEmissive = window.bookshelf.material.emissive.clone();
+            }
+            let blinkCount = 0;
+            let on = false;
+            bookshelfBlinkTimeout = setInterval(() => {
+                if (on) {
+                    window.bookshelf.material.emissive.copy(bookshelfOriginalEmissive);
+                } else {
+                    window.bookshelf.material.emissive.set(0xfff700);
+                }
+                on = !on;
+                blinkCount++;
+                if (blinkCount >= 4) { // 4 cambios = 2 parpadeos
+                    clearInterval(bookshelfBlinkTimeout);
+                    bookshelfBlinkTimeout = null;
+                    setTimeout(() => {
+                        window.bookshelf.material.emissive.copy(bookshelfOriginalEmissive);
+                        bookshelfBlinking = false;
+                    }, 120);
+                }
+            }, 120);
+        }
+    } else {
+        if (bookshelfBlinkTimeout) {
+            clearInterval(bookshelfBlinkTimeout);
+            bookshelfBlinkTimeout = null;
+        }
+        bookshelfBlinking = false;
+        if (bookshelfOriginalEmissive) {
+            window.bookshelf.material.emissive.copy(bookshelfOriginalEmissive);
+        }
+    }
+});
